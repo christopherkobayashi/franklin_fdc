@@ -1,0 +1,5 @@
+0x0000 - 0x0fff: Controller test firmware
+0x0100 - 0x01ff: 16-sector
+0x0200 - 0x02ff: 13-sector
+0x0300 - 0x03ff: Firmware "put jumpers here" splash screen
+

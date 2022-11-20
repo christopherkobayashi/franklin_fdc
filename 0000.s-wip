@@ -1,0 +1,146 @@
+; da65 V2.11.0 - (C) Copyright 2000-2005,  Ullrich von Bassewitz
+; Created:    2022-01-26 21:00:18
+; Input file: xaa
+; Page:       1
+
+
+        .setcpu "6502"
+
+MON_WAIT =	$FCA8
+GETLNZ =	$FD67
+BELL =		$FF3A
+IORTS =		$FF58
+GETNUM =	 $FFA7
+
+* = $c600
+
+        lda     #$A3
+        sta     $33
+LC604:  jsr     BELL
+LC607:  jsr     GETLNZ
+        lda     #$00
+        sta     $F2
+LC60E:  sta     $C010
+        sta     $F3
+        ldy     $F2
+        jsr     GETNUM
+        sty     $F2
+        cmp     #$C6
+        beq     LC607
+        cmp     #$EC
+        beq     LC64E
+        cmp     #$F0
+        beq     LC676
+        cmp     #$F3
+        beq     LC657
+        ldy     #$7F
+        cmp     #$06
+        beq     LC67C
+        cmp     #$EB
+        beq     LC641
+        ldx     #$06
+        stx     $F3
+        cmp     #$F1
+        beq     LC67C
+        cmp     #$EA
+        bne     LC604
+        brk
+LC641:  lda     #$50
+        sta     $FC
+        txa
+        adc     #$00
+        sta     $F3
+        lda     #$00
+        beq     LC651
+LC64E:  lda     $3E
+        asl     a
+LC651:  sta     $F0
+        ldy     #$FF
+        bne     LC67C
+LC657:  lda     $3E
+        asl     a
+        sta     $F1
+        ldy     #$00
+        beq     LC67C
+LC660:  lda     #$50
+        jsr     MON_WAIT
+        sta     $C088,x
+        ldy     $3E
+LC66A:  jsr     MON_WAIT
+        dey
+        bpl     LC66A
+        bmi     LC68E
+LC672:  lda     #$00
+        beq     LC60E
+LC676:  lda     $3E
+        sta     $FF
+        ldy     #$0F
+LC67C:  sty     $09
+        jsr     IORTS
+        tsx
+        lda     $0100,x
+        asl     a
+        asl     a
+        asl     a
+        asl     a
+        sta     $FD
+        adc     $F3
+        tax
+LC68E:  sta     $C089,x
+        lda     $09
+        beq     LC6BA
+        bmi     LC6BA
+        asl     a
+        bmi     LC6AC
+        sta     $C08F,x
+LC69D:  lda     $09
+        asl     a
+        bmi     LC660
+        nop
+        nop
+        lda     $FF
+        sta     $C08D,x
+        cmp     $C08C,x
+LC6AC:  lda     $C000
+        eor     #$9B
+        bne     LC69D
+        ldx     $FD
+        sta     $C08E,x
+LC6B8:  beq     LC672
+LC6BA:  ldx     $FD
+        sta     $C089,x
+LC6BF:  ldy     $FC
+LC6C1:  cpy     $F0
+        bne     LC6E3
+        lda     $F0
+        sta     $FC
+        lda     $09
+        bne     LC672
+        lda     $F0
+        ldy     $F1
+        sta     $F1
+        sty     $F0
+        lda     $C000
+        eor     #$9B
+        beq     LC6B8
+        lda     #$73
+        jsr     MON_WAIT
+        bcs     LC6BF
+LC6E3:  bcs     LC6E7
+        iny
+        iny
+LC6E7:  dey
+        tya
+        and     #$03
+        asl     a
+        ora     $FD
+        tax
+        lsr     a
+        lsr     a
+        sta     $C081,x
+        nop
+        nop
+        lda     #$56
+        jsr     MON_WAIT
+        sta     $C080,x
+        bcs     LC6C1
